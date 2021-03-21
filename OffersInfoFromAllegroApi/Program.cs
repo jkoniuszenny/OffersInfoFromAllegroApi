@@ -7,16 +7,39 @@ namespace OffersInfoFromAllegroApi
     {
         static async Task Main(string[] args)
         {
+
             AllegroApi allegroApi = new AllegroApi(
-                "195b6f90cf0d4fe58c531d4e94398655",
-                "KJEMA69eqzpn1uSzB9aFuQm7DmLMG9MobYzF02dYEOkgiCRteGlMB6fKqCFzWu5P",
-                "xZ3kLHP6XBLTESvLv1Q1is4Vi3bUAje2"
+                "clientId",
+                "clientSecret",
+                "deviceCode"
                 );
 
+            bool validate = await allegroApi.Validate();
 
+            if (!validate)
+            {
+                Console.ReadKey();
+                return;
+            }
+
+            Console.WriteLine("Odnawiam token z Allegro ...");
             await allegroApi.RefreshToken();
 
-            await allegroApi.ReadOffers();
+            Console.WriteLine("Pobieram dane z Allegro ...");
+            await allegroApi.ReadOffersFromAllegro();
+
+            Console.WriteLine("Odczytuje dane z pliku ...");
+            await allegroApi.ReadOffersFromFile();
+
+            Console.WriteLine("Zapisuję plik z danymi z Allegro ...");
+            await allegroApi.PrepareExcelFromAllegro();
+
+            Console.WriteLine("Zapisuję plik z wynikami porówniania ...");
+            await allegroApi.PrepareExcelCompareFile();
+
+            Console.WriteLine("Wszystkie działania zakończone. Naciśnij dowolny przycisk aby zamnkąć.");
+            Console.ReadKey();
+
         }
     }
 }
