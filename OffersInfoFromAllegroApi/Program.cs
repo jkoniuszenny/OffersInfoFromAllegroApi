@@ -1,4 +1,7 @@
-﻿using System;
+﻿using OffersInfoFromAllegroApi.Models;
+using System;
+using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace OffersInfoFromAllegroApi
@@ -8,11 +11,16 @@ namespace OffersInfoFromAllegroApi
         static async Task Main(string[] args)
         {
 
+            AppSettings appSettings = new AppSettings();
+
+            using (var reader = new StreamReader(Directory.GetCurrentDirectory() + "/appsettings.json"))
+                appSettings = JsonSerializer.Deserialize<AppSettings>(reader.ReadToEnd());
+
             AllegroApi allegroApi = new AllegroApi(
-                "clientId",
-                "clientSecret",
-                "deviceCode"
-                );
+                  appSettings.ClientId,
+                  appSettings.ClientSecret,
+                  appSettings.DeviceCode
+                  );
 
             bool validate = await allegroApi.Validate();
 
@@ -38,6 +46,7 @@ namespace OffersInfoFromAllegroApi
             await allegroApi.PrepareExcelCompareFile();
 
             Console.WriteLine("Wszystkie działania zakończone. Naciśnij dowolny przycisk aby zamnkąć.");
+
             Console.ReadKey();
 
         }
